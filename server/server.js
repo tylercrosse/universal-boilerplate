@@ -1,8 +1,8 @@
 /* eslint-disable no-console, no-use-before-define */
 
-import path from 'path'
-import Express from 'express'
-import qs from 'qs'
+import path from 'path';
+import express from 'express';
+import qs from 'qs';
 
 import webpack from 'webpack'
 import webpackDevMiddleware from 'webpack-dev-middleware'
@@ -17,16 +17,19 @@ import configureStore from '../common/store/configureStore'
 import App from '../common/components/App'
 import { fetchCounter } from '../common/api/counter'
 
-const app = new Express()
-const port = 3000
+const app = new express();
+const port = 3000;
 
 // Use this middleware to set up hot module reloading via webpack.
 const compiler = webpack(webpackConfig)
 app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: webpackConfig.output.publicPath }))
 app.use(webpackHotMiddleware(compiler))
 
+// serve static files
+app.use(express.static('static'));
+
 // This is fired every time the server side receives a request
-app.use(handleRender)
+app.use('/*', handleRender)
 
 function handleRender(req, res) {
   // Query our mock API asynchronously
