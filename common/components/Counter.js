@@ -13,8 +13,8 @@ const Counter = ({increment, incrementIfOdd, incrementAsync, decrement, counter}
       {' '}
       <button onClick={() => incrementAsync()}>Increment async</button>
     </p>
-    <img src="./assets/imgs/pizza1.png" alt="pizza"/>
-    <img src="./assets/imgs/pizza2.svg" alt="pizza"/>
+    <img src="./imgs/pizza1.png" alt="pizza"/>
+    <img src="./imgs/pizza2.svg" alt="pizza"/>
   </div>
 )
 
