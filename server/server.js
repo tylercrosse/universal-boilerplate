@@ -37,13 +37,8 @@ app.get('/*', async (req, res) => {
     const counter = parseInt(params.counter, 10) || apiResult || 0
     const preloadedState = { counter }
     const store = configureStore(preloadedState);
-    // const template = await getTemplate();
     const ReactString = await getReactString(req, res, store);
     const finalState = store.getState()
-    // const fullPage = template
-    //   .replace('{{SSR}}', ReactString)
-    //   .replace('"{{STATE}}"', JSON.stringify(finalState).replace(/</g, '\\x3c'));
-    // res.send(fullPage);
     res.send(renderFullPage(ReactString, finalState));
   } catch (err) {
     console.log(err);
@@ -62,20 +57,6 @@ function getReactString(req, res, store) {
       )
     );
   })
-}
-
-function getTemplate() {
-  const htmlFilePath = path.join(__dirname, 'index.html');
-  return new Promise((resolve, reject) => {
-    fs.readFile(htmlFilePath, 'utf8', (err, htmlData) => {
-      if (err) {
-        reject(err);
-      }
-      else {
-        resolve(htmlData);
-      }
-    });
-  });
 }
 
 function renderFullPage(html, preloadedState) {
