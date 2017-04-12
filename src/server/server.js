@@ -1,14 +1,8 @@
 /* eslint-disable no-console, no-use-before-define */
-
 import path from 'path';
 import express from 'express';
 import qs from 'qs';
 import fs from 'fs';
-
-import webpack from 'webpack'
-import webpackDevMiddleware from 'webpack-dev-middleware'
-import webpackHotMiddleware from 'webpack-hot-middleware'
-import webpackConfig from '../webpack.config'
 
 import React from 'react'
 import { renderToString } from 'react-dom/server'
@@ -22,9 +16,26 @@ const app = new express();
 const port = 3000;
 
 // Use this middleware to set up hot module reloading via webpack.
-const compiler = webpack(webpackConfig)
-app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: webpackConfig.output.publicPath }))
-app.use(webpackHotMiddleware(compiler))
+if (process.env.NODE_ENV === 'development') {
+  const webpack = require('webpack');
+  const webpackDevMiddleware = require('webpack-dev-middleware');
+  const webpackHotMiddleware = require('webpack-hot-middleware');
+  const webpackConfig = require('../../webpackConfig');
+
+  const compiler = webpack(webpackConfig)
+  app.use(webpackDevMiddleware(compiler, {
+    publicPath: webpackConfig.output.publicPath,
+    stats: {
+      colors: true,
+      hash: false,
+      timings: true,
+      chunks: false,
+      chunkModules: false,
+      modules: false
+    }
+  }))
+  app.use(webpackHotMiddleware(compiler))
+}
 
 // serve static files
 app.use(express.static('static'));
@@ -71,7 +82,8 @@ function renderFullPage(html, preloadedState) {
     <script>
       window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\x3c')}
     </script>
-    <script src="/static/js/bundle.js"></script>
+    <script src="js/vendor.js"></script>
+    <script src="js/app.js"></script>
   </body>
 </html>`
 }

@@ -9,26 +9,29 @@ const vendors = [
   'redux',
   'redux-thunk'
 ];
-const entryPath = './client/index.js';
-const outputPath = path.join(__dirname, 'static/js');
+const entryPath = './src/client/index.js';
+const outputPath = path.join(__dirname, 'static/js/');
 // ------------------------------------
 // Base Config
 // ------------------------------------
 const webpackConfig = {
+  entry: {
+    vendor: vendors
+  },
   output: {
     path: outputPath,
-    filename: 'bundle.js',
-    publicPath: '/static/js/'
+    filename: '[name].js',
+    publicPath: '/js/'
   },
   module: {}
 };
 
 webpackConfig.plugins = [
   new webpack.optimize.OccurrenceOrderPlugin(),
-  // new webpack.optimize.CommonsChunkPlugin({
-  //   names: ['vendor'],
-  //   minChunks: Infinity
-  // })
+  new webpack.optimize.CommonsChunkPlugin({
+    names: ['vendor'],
+    minChunks: Infinity
+  })
 ];
 webpackConfig.module.loaders = [
   {
@@ -47,11 +50,16 @@ webpackConfig.module.loaders = [
 // ------------------------------------
 if (isProd) {
   webpackConfig.devtool = 'cheap-module-source-map';
-  webpackConfig.entry = [
+  webpackConfig.entry.app = [
     entryPath
   ];
   webpackConfig.plugins.push(
     new CleanPlugin([outputPath], {verbose: true}),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('production')
+      }
+    }),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false
@@ -62,11 +70,16 @@ if (isProd) {
 // dev
 else {
   webpackConfig.devtool = 'source-map';
-  webpackConfig.entry = [
+  webpackConfig.entry.app = [
     'webpack-hot-middleware/client',
     entryPath
   ];
   webpackConfig.plugins.push(
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('development')
+      }
+    }),
     new webpack.HotModuleReplacementPlugin()
   );
 }
