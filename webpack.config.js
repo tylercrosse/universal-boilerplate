@@ -15,23 +15,20 @@ const outputPath = path.join(__dirname, 'static/js');
 // Base Config
 // ------------------------------------
 const webpackConfig = {
-  entry: {
-    vendor: vendors
-  },
   output: {
     path: outputPath,
-    filename: '[name].js',
-    publicPath: '/static/'
+    filename: 'bundle.js',
+    publicPath: '/static/js/'
   },
   module: {}
 };
 
 webpackConfig.plugins = [
-  new CleanPlugin([outputPath], {verbose: true}),
-  new webpack.optimize.CommonsChunkPlugin({
-    names: ['vendor'],
-    minChunks: Infinity
-  })
+  new webpack.optimize.OccurrenceOrderPlugin(),
+  // new webpack.optimize.CommonsChunkPlugin({
+  //   names: ['vendor'],
+  //   minChunks: Infinity
+  // })
 ];
 webpackConfig.module.loaders = [
   {
@@ -50,11 +47,11 @@ webpackConfig.module.loaders = [
 // ------------------------------------
 if (isProd) {
   webpackConfig.devtool = 'cheap-module-source-map';
-  webpackConfig.entry.application = [
+  webpackConfig.entry = [
     entryPath
   ];
   webpackConfig.plugins.push(
-    new webpack.optimize.OccurrenceOrderPlugin(),
+    new CleanPlugin([outputPath], {verbose: true}),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false
@@ -65,7 +62,7 @@ if (isProd) {
 // dev
 else {
   webpackConfig.devtool = 'source-map';
-  webpackConfig.entry.application = [
+  webpackConfig.entry = [
     'webpack-hot-middleware/client',
     entryPath
   ];

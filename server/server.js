@@ -3,6 +3,7 @@
 import path from 'path';
 import express from 'express';
 import qs from 'qs';
+import fs from 'fs';
 
 import webpack from 'webpack'
 import webpackDevMiddleware from 'webpack-dev-middleware'
@@ -29,52 +30,69 @@ app.use(webpackHotMiddleware(compiler))
 app.use(express.static('static'));
 
 // This is fired every time the server side receives a request
-app.use('/*', handleRender)
-
-function handleRender(req, res) {
-  // Query our mock API asynchronously
-  fetchCounter(apiResult => {
-    // Read the counter from the request, if provided
+app.get('/*', async (req, res) => {
+  try {
+    const apiResult = await fetchCounter();
     const params = qs.parse(req.query)
     const counter = parseInt(params.counter, 10) || apiResult || 0
-
-    // Compile an initial state
     const preloadedState = { counter }
-
-    // Create a new Redux store instance
-    const store = configureStore(preloadedState)
-
-    // Render the component to a string
-    const html = renderToString(
-      <Provider store={store}>
-        <App />
-      </Provider>
-    )
-
-    // Grab the initial state from our Redux store
+    const store = configureStore(preloadedState);
+    // const template = await getTemplate();
+    const ReactString = await getReactString(req, res, store);
     const finalState = store.getState()
+    // const fullPage = template
+    //   .replace('{{SSR}}', ReactString)
+    //   .replace('"{{STATE}}"', JSON.stringify(finalState).replace(/</g, '\\x3c'));
+    // res.send(fullPage);
+    res.send(renderFullPage(ReactString, finalState));
+  } catch (err) {
+    console.log(err);
+    res.send('Error');
+  }
+})
 
-    // Send the rendered page back to the client
-    res.send(renderFullPage(html, finalState))
+function getReactString(req, res, store) {
+  return new Promise((resolve, reject) => {
+    // expand with router stuff
+    resolve(
+      renderToString(
+        <Provider store={store}>
+          <App />
+        </Provider>
+      )
+    );
   })
 }
 
+function getTemplate() {
+  const htmlFilePath = path.join(__dirname, 'index.html');
+  return new Promise((resolve, reject) => {
+    fs.readFile(htmlFilePath, 'utf8', (err, htmlData) => {
+      if (err) {
+        reject(err);
+      }
+      else {
+        resolve(htmlData);
+      }
+    });
+  });
+}
+
 function renderFullPage(html, preloadedState) {
-  return `
-    <!doctype html>
-    <html>
-      <head>
-        <title>Redux Universal Example</title>
-      </head>
-      <body>
-        <div id="app">${html}</div>
-        <script>
-          window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\x3c')}
-        </script>
-        <script src="/static/bundle.js"></script>
-      </body>
-    </html>
-    `
+  return `<!doctype html>
+<html>
+  <head>
+    <title>Redux Universal Example</title>
+  </head>
+  <body>
+    <h1>Pizza!</h1>
+    <div id="app">${html}</div>
+    <script>
+      window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\x3c')}
+    </script>
+    <script src="/static/js/bundle.js"></script>
+  </body>
+</html>`
 }
 
 app.listen(port, (error) => {
