@@ -24,6 +24,9 @@ const webpackConfig = {
     filename: 'js/[name].js',
     publicPath: '/'
   },
+  resolve: {
+    extensions: ['.js', '.jsx', '.json', '.scss']
+  },
   module: {}
 };
 

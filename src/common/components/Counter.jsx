@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React, { PropTypes } from 'react';
+import PizzaSVG1 from './PizzaSVG1';
 
 const Counter = ({increment, incrementIfOdd, incrementAsync, decrement, counter}) => (
   <div>
@@ -13,8 +14,8 @@ const Counter = ({increment, incrementIfOdd, incrementAsync, decrement, counter}
       {' '}
       <button onClick={() => incrementAsync()}>Increment async</button>
     </p>
+    <PizzaSVG1 />
     <img src="./imgs/pizza1.png" alt="pizza"/>
-    <img src="./imgs/pizza2.svg" alt="pizza"/>
   </div>
 )
 
