@@ -1,5 +1,8 @@
-import React, { PropTypes } from 'react';
-import PizzaSVG1 from './PizzaSVG1';
+import React, { PropTypes }   from 'react';
+import { bindActionCreators } from 'redux'
+import { connect }            from 'react-redux'
+import * as CounterActions    from '../ducks/counter'
+import PizzaSVG1              from './PizzaSVG1';
 
 const Counter = ({increment, incrementIfOdd, incrementAsync, decrement, counter}) => (
   <div>
@@ -27,4 +30,12 @@ Counter.propTypes = {
   counter: PropTypes.number.isRequired
 }
 
-export default Counter
+const mapStateToProps = (state) => ({
+  counter: state.counter
+})
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(CounterActions, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Counter)

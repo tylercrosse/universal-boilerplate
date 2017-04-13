@@ -1,16 +1,16 @@
 /* eslint-disable no-console, no-use-before-define */
-import path from 'path';
+import path    from 'path';
 import express from 'express';
-import qs from 'qs';
-import fs from 'fs';
+import qs      from 'qs';
 
-import React from 'react'
-import { renderToString } from 'react-dom/server'
-import { Provider } from 'react-redux'
-
-import configureStore from '../common/store/configureStore'
-import App from '../common/components/App'
-import { fetchCounter } from '../common/api/counter'
+import React              from 'react';
+import { renderToString } from 'react-dom/server';
+import { Provider }       from 'react-redux';
+import { match,
+  RouterContext }         from 'react-router';
+import { routes }         from '../common/routes';
+import configureStore     from '../common/store/configureStore';
+import { fetchCounter }   from '../common/api/counter';
 
 const app = new express();
 const port = 3000;
@@ -59,15 +59,24 @@ app.get('/*', async (req, res) => {
 
 function getReactString(req, res, store) {
   return new Promise((resolve, reject) => {
-    // expand with router stuff
-    resolve(
-      renderToString(
-        <Provider store={store}>
-          <App />
-        </Provider>
-      )
-    );
-  })
+    match({ routes, location: req.url }, (err, redirect, props) => {
+      if (err) {
+        reject();
+      } else if (redirect) {
+        res.redirect(302, redirect.pathname + redirect.search);
+      } else if (props) {
+        resolve(
+          renderToString(
+            <Provider store={store}>
+              <RouterContext {...props} />
+            </Provider>
+          )
+        );
+      } else {
+        reject();
+      }
+    });
+  });
 }
 
 function renderFullPage(html, preloadedState) {

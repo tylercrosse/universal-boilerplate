@@ -1,14 +1,19 @@
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import Counter from '../components/Counter'
-import * as CounterActions from '../ducks/counter'
+import React from 'react';
+import { Link } from 'react-router';
 
-const mapStateToProps = (state) => ({
-  counter: state.counter
-})
+const App = (props) => {
+  return (
+    <div>
+      <header>
+        <Link to="/">Counter</Link>
+        <br />
+        <Link to="/pizza">Pizza</Link>
+        <br />
+        <br />
+      </header>
+      {props.children}
+    </div>
+  );
+};
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(CounterActions, dispatch)
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Counter)
+export default App;

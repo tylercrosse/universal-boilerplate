@@ -2,6 +2,11 @@
   "name": "universal",
   "version": "0.0.0",
   "description": "An example of a universally-rendered Redux application",
+  "license": "MIT",
+  "engines": {
+    "node": "7.6.0",
+    "npm": "4.1.2"
+  },
   "scripts": {
     "start": "NODE_ENV='production' node dist/server/server.js",
     "dev": "NODE_ENV='development' nodemon src/server/index.js",
@@ -20,7 +25,9 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-redux": "^5.0.3",
+    "react-router": "<4.0.0",
     "redux": "^3.2.1",
+    "redux-devtools-extension": "^2.13.0",
     "redux-thunk": "^2.2.0",
     "serve-static": "^1.12.1"
   },
