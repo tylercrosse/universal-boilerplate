@@ -19,6 +19,7 @@
   "dependencies": {
     "babel-polyfill": "^6.3.14",
     "babel-register": "^6.24.0",
+    "compression": "^1.6.2",
     "express": "^4.15.2",
     "jest": "^19.0.2",
     "qs": "^6.4.0",
