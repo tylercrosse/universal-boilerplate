@@ -3,7 +3,6 @@ const webpack           = require('webpack');
 const CleanPlugin       = require('clean-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
-
 const isProd = (process.env.NODE_ENV === 'production');
 const vendors = [
   'react',
@@ -48,6 +47,28 @@ webpackConfig.module.loaders = [
   }
 ];
 
+const sharedSassLoaders = [
+  { loader: 'css-loader' },
+  {
+    loader: 'postcss-loader',
+    options: {
+      plugins() {
+        return [
+          require('autoprefixer')({
+            add: true,
+            remove: true,
+            browsers: ['last 2 versions']
+          })
+        ]
+      }
+    }
+  },
+  // { loader: 'resolve-url-loader' }, // @fontface
+  {
+    loader: 'sass-loader',
+    options: {sourceMap: true}
+  }
+];
 // ------------------------------------
 // Env Specfic config
 // ------------------------------------
@@ -80,6 +101,15 @@ if (isProd) {
         fallback: "style-loader",
         use: "css-loader"
       })
+    },
+    {
+      test: /\.scss$/,
+      loader: ExtractTextPlugin.extract({
+        fallback: 'style-loader',
+        use: [
+          ...sharedSassLoaders
+        ]
+      })
     }
   );
 }
@@ -102,6 +132,13 @@ else {
     {
       test: /\.css$/,
       use: ['style-loader', 'css-loader']
+    },
+    {
+      test: /\.scss$/,
+      use: [
+        { loader: 'style-loader' },
+        ...sharedSassLoaders
+      ]
     }
   )
 }
