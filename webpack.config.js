@@ -1,6 +1,8 @@
-const path        = require('path');
-const webpack     = require('webpack');
-const CleanPlugin = require('clean-webpack-plugin');
+const path              = require('path');
+const webpack           = require('webpack');
+const CleanPlugin       = require('clean-webpack-plugin');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
 
 const isProd = (process.env.NODE_ENV === 'production');
 const vendors = [
@@ -10,7 +12,7 @@ const vendors = [
   'redux-thunk'
 ];
 const entryPath = './src/client/index.js';
-const outputPath = path.join(__dirname, 'static/js/');
+const outputPath = path.join(__dirname, 'static/');
 // ------------------------------------
 // Base Config
 // ------------------------------------
@@ -20,8 +22,8 @@ const webpackConfig = {
   },
   output: {
     path: outputPath,
-    filename: '[name].js',
-    publicPath: '/js/'
+    filename: 'js/[name].js',
+    publicPath: '/'
   },
   module: {}
 };
@@ -29,7 +31,8 @@ const webpackConfig = {
 webpackConfig.plugins = [
   new webpack.optimize.OccurrenceOrderPlugin(),
   new webpack.optimize.CommonsChunkPlugin({
-    names: ['vendor'],
+    name: 'vendor',
+    filename: 'js/vendor.js',
     minChunks: Infinity
   })
 ];
@@ -54,7 +57,10 @@ if (isProd) {
     entryPath
   ];
   webpackConfig.plugins.push(
-    new CleanPlugin([outputPath], {verbose: true}),
+    new CleanPlugin([
+      'static/js',
+      'static/css'
+    ], {verbose: true}),
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify('production')
@@ -64,8 +70,18 @@ if (isProd) {
       compress: {
         warnings: false
       }
-    })
-  )
+    }),
+    new ExtractTextPlugin("css/main.css")
+  );
+  webpackConfig.module.loaders.push(
+    {
+      test: /\.css$/,
+      use: ExtractTextPlugin.extract({
+        fallback: "style-loader",
+        use: "css-loader"
+      })
+    }
+  );
 }
 // dev
 else {
@@ -82,6 +98,12 @@ else {
     }),
     new webpack.HotModuleReplacementPlugin()
   );
+  webpackConfig.module.loaders.push(
+    {
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader']
+    }
+  )
 }
 
 

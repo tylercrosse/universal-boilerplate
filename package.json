@@ -6,10 +6,10 @@
     "start": "NODE_ENV='production' node dist/server/server.js",
     "dev": "NODE_ENV='development' nodemon src/server/index.js",
     "test": "jest",
-    "build": "rimraf ./dist/ && npm run build:server && npm run build:client && rimraf ./dist/client",
+    "build": "rimraf ./dist/ && npm run build:server && npm run build:client",
     "build:server": "NODE_ENV='production' npm run babel -- ./src/ -d ./dist",
     "build:client": "NODE_ENV='production' webpack",
-    "babel": "babel --presets es2015 --ignore node_modules,static,*.spec.js"
+    "babel": "babel --presets es2015 --ignore node_modules,static,client,*.spec.js"
   },
   "dependencies": {
     "babel-polyfill": "^6.3.14",
@@ -33,6 +33,11 @@
     "babel-preset-react-hmre": "^1.1.1",
     "babel-runtime": "^6.3.13",
     "clean-webpack-plugin": "^0.1.16",
+    "css-loader": "^0.28.0",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "raw-loader": "^0.5.1",
+    "rimraf": "^2.6.1",
+    "style-loader": "^0.16.1",
     "webpack": "^2.3.3",
     "webpack-dev-middleware": "^1.4.0",
     "webpack-hot-middleware": "^2.9.1"
